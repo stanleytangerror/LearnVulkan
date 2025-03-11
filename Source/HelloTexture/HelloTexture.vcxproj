@@ -83,7 +83,7 @@
     <ClCompile Include="HelloTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="frag.glsl">
+    <CustomBuild Include="shaders\frag.glsl">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">glslc.exe -fshader-stage=fragment %(FullPath) -o $(ProjectDir)shaders\%(Filename).spv</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">glslc.exe -fshader-stage=fragment %(FullPath) -o $(ProjectDir)shaders\%(Filename).spv</Command>

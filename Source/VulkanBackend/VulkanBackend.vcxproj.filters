@@ -19,6 +19,7 @@
     <ClCompile Include="Window.cpp">
       <Filter>Window</Filter>
     </ClCompile>
+    <ClCompile Include="VulkanGraphicsInfra.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\frag.glsl">
@@ -34,5 +35,6 @@
     <ClInclude Include="Platform.h">
       <Filter>Window</Filter>
     </ClInclude>
+    <ClInclude Include="VulkanGraphicsInfra.h" />
   </ItemGroup>
 </Project>

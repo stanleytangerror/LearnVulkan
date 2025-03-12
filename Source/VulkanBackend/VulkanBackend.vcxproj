@@ -87,6 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="VulkanBackend.cpp" />
+    <ClCompile Include="VulkanGraphicsInfra.cpp" />
     <ClCompile Include="VulkanResourceManager.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -107,6 +108,7 @@
   <ItemGroup>
     <ClInclude Include="Platform.h" />
     <ClInclude Include="VulkanBackendHeaders.h" />
+    <ClInclude Include="VulkanGraphicsInfra.h" />
     <ClInclude Include="VulkanResourceManager.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

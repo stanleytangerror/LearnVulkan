@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanHelloTriangle", "Vulk
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloTexture", "HelloTexture\HelloTexture.vcxproj", "{A00083E0-7E5B-4971-B56F-1ED7408DDE37}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VulkanBackend", "VulkanBackend\VulkanBackend.vcxproj", "{4992706A-76EB-4197-8204-D8B01090D453}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{A00083E0-7E5B-4971-B56F-1ED7408DDE37}.Debug|x64.Build.0 = Debug|x64
 		{A00083E0-7E5B-4971-B56F-1ED7408DDE37}.Release|x64.ActiveCfg = Release|x64
 		{A00083E0-7E5B-4971-B56F-1ED7408DDE37}.Release|x64.Build.0 = Release|x64
+		{4992706A-76EB-4197-8204-D8B01090D453}.Debug|x64.ActiveCfg = Debug|x64
+		{4992706A-76EB-4197-8204-D8B01090D453}.Debug|x64.Build.0 = Debug|x64
+		{4992706A-76EB-4197-8204-D8B01090D453}.Release|x64.ActiveCfg = Release|x64
+		{4992706A-76EB-4197-8204-D8B01090D453}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

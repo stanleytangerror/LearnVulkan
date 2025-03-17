@@ -580,7 +580,7 @@ void createUniformBuffers(VkPhysicalDevice physicalDevice, VkDevice device,
 	}
 }
 
-void createDescriptorPool(VkDevice device, VkDescriptorPool descriptorPool) {
+void createDescriptorPool(VkDevice device, VkDescriptorPool& descriptorPool) {
 	std::array<VkDescriptorPoolSize, 2> poolSizes{};
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
@@ -722,8 +722,8 @@ void createSwapChain(VkPhysicalDevice physicalDevice, VkDevice device, Platform:
 	VkSurfaceKHR surface,
 	VkSwapchainKHR& swapChain, 
 	std::vector<VkImage>& swapChainImages,
-	VkFormat swapChainImageFormat,
-	VkExtent2D swapChainExtent)
+	VkFormat& swapChainImageFormat,
+	VkExtent2D& swapChainExtent)
 {
 	SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, surface);
 
@@ -1126,7 +1126,7 @@ void copyBufferToImage(VkDevice device, VkQueue graphicsQueue, VkCommandPool com
 
 void createTextureImage(VkPhysicalDevice physicalDevice, VkDevice device, 
 	VkQueue graphicsQueue, VkCommandPool commandPool,
-	VkImage textureImage, VkDeviceMemory textureImageMemory
+	VkImage& textureImage, VkDeviceMemory& textureImageMemory
 ) {
 	int texWidth, texHeight, texChannels;
 	stbi_uc* pixels = stbi_load("textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -1327,6 +1327,9 @@ void drawFrame(
 	VkDevice device, 
 	Platform::IWindow* window,
 	VkSurfaceKHR surface,
+	VkQueue graphicsQueue,
+	VkQueue presentQueue,
+	std::vector<VkCommandBuffer>& commandBuffers,
 	const std::vector<void*>& uniformBuffersMapped,
 	std::vector<VkSemaphore>& imageAvailableSemaphores,
 	std::vector<VkSemaphore>& renderFinishedSemaphores,
@@ -1338,6 +1341,7 @@ void drawFrame(
 	VkFormat swapChainImageFormat,
 	VkExtent2D swapChainExtent,
 	uint32_t currentFrame,
+	bool framebufferResized,
 	VkRenderPass renderPass,
 	VkPipeline graphicsPipeline,
 	VkPipelineLayout pipelineLayout,
@@ -1351,7 +1355,7 @@ void drawFrame(
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR) {
 		recreateSwapChain(physicalDevice, device, window, surface, 
-			swapChains, swapChainImages, swapChainImageViews, swapChainFramebuffers, swapChainImageFormat, swapChainExtent,
+			swapChain, swapChainImages, swapChainImageViews, swapChainFramebuffers, swapChainImageFormat, swapChainExtent,
 			renderPass);
 		return;
 	}
@@ -1359,7 +1363,7 @@ void drawFrame(
 		throw std::runtime_error("failed to acquire swap chain image!");
 	}
 
-	updateUniformBuffer(uniformBuffersMapped, currentFrame);
+	updateUniformBuffer(uniformBuffersMapped, currentFrame, swapChainExtent);
 
 	vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
@@ -1491,39 +1495,40 @@ private:
 		setupDebugMessenger(instance, debugMessenger);
 		createSurface(instance, window, surface);
 		pickPhysicalDevice(instance, surface, physicalDevice);
-		createLogicalDevice(instance, physicalDevice, device, graphicsQueue, presentQueue);
-		createSwapChain(physicalDevice, device, window, swapChainImages, swapChainImageFormat, swapChainExtent);
-		createImageViews(device, swapChainImages, swapChainImageViews);
-		createRenderPass(device, renderPass);
+		createLogicalDevice(instance, surface, physicalDevice, device, graphicsQueue, presentQueue);
+		createSwapChain(physicalDevice, device, window, surface, swapChain, swapChainImages, swapChainImageFormat, swapChainExtent);
+		createImageViews(device, swapChainImages, swapChainImageViews, swapChainImageFormat);
+		createRenderPass(device, renderPass, swapChainImageFormat);
 		createDescriptorSetLayout(device, descriptorSetLayout);
-		createGraphicsPipeline(device, pipelineLayout, graphicsPipeline);
-		createFramebuffers(device, swapChainImageViews, swapChainFramebuffers, swapChainExtent);
+		createGraphicsPipeline(device, renderPass, pipelineLayout, graphicsPipeline, descriptorSetLayout);
+		createFramebuffers(device, swapChainImageViews, swapChainFramebuffers, swapChainExtent, renderPass);
 		createCommandPool(physicalDevice, device, surface, commandPool);
-		createTextureImage(device, graphicsQueue, commandPool, textureImage, textureImageMemory);
+		createTextureImage(physicalDevice, device, graphicsQueue, commandPool, textureImage, textureImageMemory);
 		createTextureImageView(device, textureImage, textureImageView);
-		createTextureSampler(device, textureSampler);
+		createTextureSampler(physicalDevice, device, textureSampler);
 		createVertexBuffer(physicalDevice, device, graphicsQueue, commandPool, vertexBuffer, vertexBufferMemory);
 		createIndexBuffer(physicalDevice, device, graphicsQueue, commandPool, indexBuffer, indexBufferMemory);
-		createUniformBuffers(device, uniformBuffers, uniformBuffersMemory, uniformBuffersMapped);
+		createUniformBuffers(physicalDevice, device, uniformBuffers, uniformBuffersMemory, uniformBuffersMapped);
 		createDescriptorPool(device, descriptorPool);
-		createDescriptorSets(device, descriptorPool, descriptorSetLayout, uniformBuffers, textureImageView, textureSampler, descriptorSets);
-		createCommandBuffers(device, commandPool, commandBuffers);
+		createDescriptorSets(device, descriptorSets, textureImageView, textureSampler, descriptorPool, descriptorSetLayout, uniformBuffers);
+		createCommandBuffers(device, commandPool, commandBuffers, renderPass);
 		createSyncObjects(device, imageAvailableSemaphores, renderFinishedSemaphores, inFlightFences);
 	}
 
 	void mainLoop() {
 		while (window->IsAlive()) {
-			drawFrame(physicalDevice, device, window, surface,
+			drawFrame(physicalDevice, device, window, surface, graphicsQueue, presentQueue, commandBuffers, 
 				uniformBuffersMapped, imageAvailableSemaphores, renderFinishedSemaphores, inFlightFences,
 				swapChain, swapChainImages, swapChainImageViews, swapChainFramebuffers, swapChainImageFormat, swapChainExtent,
-				renderPass, renderPass, graphicsPipeline, pipelineLayout, vertexBuffer, indexBuffer, descriptorSets);
+				currentFrame, framebufferResized, 
+				renderPass, graphicsPipeline, pipelineLayout, vertexBuffer, indexBuffer, descriptorSets);
 		}
 
 		vkDeviceWaitIdle(device);
 	}
 
 	void cleanup() {
-		cleanupSwapChain();
+		cleanupSwapChain(device, swapChain, swapChainImageViews, swapChainFramebuffers);
 
 		vkDestroyPipeline(device, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);

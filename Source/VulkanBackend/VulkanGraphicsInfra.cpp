@@ -421,6 +421,15 @@ namespace VulkanBackend
 		mSurfaces[window] = surface;
 	}
 
+	void VulkanGraphicsInfra::DetachFromWindow(Platform::IWindow* window)
+	{
+		mSwapchains.erase(window);
+		mQueueFamilyIndices.erase(window);
+		
+		vkDestroySurfaceKHR(mInstance, mSurfaces[window], nullptr);
+		mSurfaces.erase(window);
+	}
+
 	Swapchain* VulkanGraphicsInfra::GetSwapchain(Platform::IWindow* window) const
 	{
 		auto it = mSwapchains.find(window);

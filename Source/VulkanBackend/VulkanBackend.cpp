@@ -1047,21 +1047,22 @@ private:
 		auto swapchainExtent = swapChain->GetExtent();
 		auto swapChainImageFormat = swapChain->GetFormat();
 
-		VulkanBackend::ImageViewInfo swapChainImageViewInfo{};
-		swapChainImageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		swapChainImageViewInfo.format = swapChainImageFormat;
-		swapChainImageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		swapChainImageViewInfo.subresourceRange.baseMipLevel = 0;
-		swapChainImageViewInfo.subresourceRange.levelCount = 1;
-		swapChainImageViewInfo.subresourceRange.baseArrayLayer = 0;
-		swapChainImageViewInfo.subresourceRange.layerCount = 1;
+		auto swapChainImageViews = 
+			std::views::iota(0u, swapChain->GetFrameCount())
+			| std::ranges::views::transform([resourceManager, swapChain, swapChainImageFormat](auto i)
+			{
+				VulkanBackend::ImageViewInfo swapChainImageViewInfo{};
+				swapChainImageViewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+				swapChainImageViewInfo.format = swapChainImageFormat;
+				swapChainImageViewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				swapChainImageViewInfo.subresourceRange.baseMipLevel = 0;
+				swapChainImageViewInfo.subresourceRange.levelCount = 1;
+				swapChainImageViewInfo.subresourceRange.baseArrayLayer = 0;
+				swapChainImageViewInfo.subresourceRange.layerCount = 1;
 
-		auto swapChainImageViews = std::vector<VkImageView>
-		{
-			resourceManager->CreateImageView(swapChain->GetImage(0), swapChainImageViewInfo),
-			resourceManager->CreateImageView(swapChain->GetImage(1), swapChainImageViewInfo),
-			resourceManager->CreateImageView(swapChain->GetImage(2), swapChainImageViewInfo),
-		};
+				return resourceManager->CreateImageView(swapChain->GetImage(i), swapChainImageViewInfo);
+			})
+			| std::ranges::to<std::vector<VkImageView>>();
 
 		createRenderPass(device, renderPass, swapChainImageFormat);
 		createDescriptorSetLayout(device, descriptorSetLayout);
@@ -1091,13 +1092,11 @@ private:
 	}
 
 	void cleanup() {
+		mInfra->DetachFromWindow(window);
+
 		auto instance = mInfra->GetVkInstance();
 		auto physicalDevice = mInfra->GetPhysicalDevice();
 		auto device = mInfra->GetDevice();
-		auto swapChain = mInfra->GetSwapchain(window);
-		auto swapchainExtent = swapChain->GetExtent();
-		auto swapChainImageFormat = swapChain->GetFormat();
-		auto queueFamilyIndices = mInfra->GetQueueFamilyIndices(window);
 		auto resourceManager = mInfra->GetResourceManager();
 
 		vkDestroyPipeline(device, graphicsPipeline, nullptr);

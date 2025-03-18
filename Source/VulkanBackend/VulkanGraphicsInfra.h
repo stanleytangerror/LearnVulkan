@@ -30,9 +30,10 @@ namespace VulkanBackend
 		VkFormat		GetFormat() const { return swapchainImageFormat; }
 		VkExtent2D		GetExtent() const { return swapchainExtent; }
 		u32				GetImage(u32 frameIndex) const { return swapchainImageIds[frameIndex]; }
+		u32				GetFrameCount() const { return imageCount; }
 
 	private:
-		const u32 imageCount = 3;
+		const u32 imageCount = 2;
 		VkDevice device;
 		VkSwapchainKHR swapchain;
 
@@ -111,6 +112,7 @@ namespace VulkanBackend
 		virtual ~VulkanGraphicsInfra();
 
 		void				AdaptToWindow(Platform::IWindow* window);
+		void				DetachFromWindow(Platform::IWindow* window);
 
 		VkInstance			GetVkInstance() const { return mInstance; }
 		VkPhysicalDevice	GetPhysicalDevice() const { return physicalDevice; }

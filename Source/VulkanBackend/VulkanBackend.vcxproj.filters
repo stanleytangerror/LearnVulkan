@@ -14,12 +14,12 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="VulkanBackend.cpp" />
     <ClCompile Include="VulkanResourceManager.cpp" />
     <ClCompile Include="Window.cpp">
       <Filter>Window</Filter>
     </ClCompile>
     <ClCompile Include="VulkanGraphicsInfra.cpp" />
+    <ClCompile Include="VulkanBackend.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\frag.glsl">

@@ -24,6 +24,8 @@
 #include <optional>
 #include <set>
 #include <mutex>
+#include <ranges>
+#include <map>
 
 using i8 = int8_t;
 using u8 = uint8_t;

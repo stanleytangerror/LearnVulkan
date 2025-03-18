@@ -14,12 +14,12 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="VulkanResourceManager.cpp" />
     <ClCompile Include="Window.cpp">
       <Filter>Window</Filter>
     </ClCompile>
     <ClCompile Include="VulkanGraphicsInfra.cpp" />
     <ClCompile Include="VulkanBackend.cpp" />
+    <ClCompile Include="VulkanResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\frag.glsl">
@@ -28,7 +28,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VulkanBackendHeaders.h" />
-    <ClInclude Include="VulkanResourceManager.h" />
     <ClInclude Include="Window.h">
       <Filter>Window</Filter>
     </ClInclude>
@@ -36,5 +35,6 @@
       <Filter>Window</Filter>
     </ClInclude>
     <ClInclude Include="VulkanGraphicsInfra.h" />
+    <ClInclude Include="VulkanResource.h" />
   </ItemGroup>
 </Project>

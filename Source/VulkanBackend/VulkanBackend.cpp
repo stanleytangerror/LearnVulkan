@@ -880,7 +880,7 @@ void updateUniformBuffer(const std::vector<void*>& uniformBuffersMapped, uint32_
 	memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }
 
-void drawFrame(
+bool drawFrame(
 	VkPhysicalDevice physicalDevice,
 	VkDevice device, 
 	Platform::IWindow* window,
@@ -912,7 +912,7 @@ void drawFrame(
 		//recreateSwapChain(physicalDevice, device, window, surface, 
 		//	swapChain, swapChainImages, swapChainImageViews, swapChainFramebuffers, swapChainImageFormat, swapChainExtent,
 		//	renderPass);
-		return;
+		return false;
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
 		throw std::runtime_error("failed to acquire swap chain image!");
@@ -965,12 +965,15 @@ void drawFrame(
 		//recreateSwapChain(physicalDevice, device, window, surface, 
 		//	swapChain, swapChainImages, swapChainImageViews, swapChainFramebuffers, swapChainImageFormat, swapChainExtent,
 		//	renderPass);
+		return false;
 	}
 	else if (result != VK_SUCCESS) {
 		throw std::runtime_error("failed to present swap chain image!");
 	}
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
+	return true;
 }
 
 class VulkanTriangleApplication
@@ -1080,13 +1083,13 @@ private:
 		createCommandBuffers(device, commandPool, commandBuffers, renderPass);
 		createSyncObjects(device, imageAvailableSemaphores, renderFinishedSemaphores, inFlightFences);
 
-		while (window->IsAlive()) {
+		while (window->IsAlive() && 
 			drawFrame(physicalDevice, device, window, graphicsQueue, presentQueue, commandBuffers, 
 				uniformBuffersMapped, imageAvailableSemaphores, renderFinishedSemaphores, inFlightFences,
 				swapChain->GetSwapchain(), swapChainFramebuffers, swapChainImageFormat, swapchainExtent,
 				currentFrame, framebufferResized, 
-				renderPass, graphicsPipeline, pipelineLayout, vertexBuffer, indexBuffer, descriptorSets);
-		}
+				renderPass, graphicsPipeline, pipelineLayout, vertexBuffer, indexBuffer, descriptorSets))
+		{}
 
 		vkDeviceWaitIdle(device);
 	}

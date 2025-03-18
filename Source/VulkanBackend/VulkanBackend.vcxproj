@@ -91,7 +91,7 @@
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</PreprocessToFile>
     </ClCompile>
     <ClCompile Include="VulkanGraphicsInfra.cpp" />
-    <ClCompile Include="VulkanResourceManager.cpp" />
+    <ClCompile Include="VulkanResource.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -112,7 +112,7 @@
     <ClInclude Include="Platform.h" />
     <ClInclude Include="VulkanBackendHeaders.h" />
     <ClInclude Include="VulkanGraphicsInfra.h" />
-    <ClInclude Include="VulkanResourceManager.h" />
+    <ClInclude Include="VulkanResource.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
